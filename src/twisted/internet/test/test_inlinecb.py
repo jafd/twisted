@@ -145,3 +145,34 @@ class ForwardTraceBackTests(SynchronousTestCase):
         d = calling()
         f = self.failureResultOf(d)
         self.assertIn("in erroring", f.getTraceback())
+
+
+    def test_forwardLotsOfTracebacks(self):
+        """
+        Test that several chained inlineCallbacks gives information about all generators
+        """
+
+        @inlineCallbacks
+        def erroring():
+            raise Exception()
+            yield "forcing generator"
+
+        @inlineCallbacks
+        def calling3():
+            yield erroring()
+
+        @inlineCallbacks
+        def calling2():
+            yield calling3()
+
+        @inlineCallbacks
+        def calling():
+            yield calling2()
+
+        d = calling()
+        f = self.failureResultOf(d)
+        tb = f.getTraceback()
+        self.assertIn("in erroring", tb)
+        self.assertIn("in calling", tb)
+        self.assertIn("in calling2", tb)
+        self.assertIn("in calling3", tb)
