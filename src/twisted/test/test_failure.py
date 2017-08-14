@@ -933,14 +933,6 @@ class ExtendedGeneratorTests(SynchronousTestCase):
         self.assertEqual(len(newFailures), 1)
         self.assertEqual(newFailures[0].getTraceback(), f.getTraceback())
 
-    if _PY3:
-        # FIXME: https://twistedmatrix.com/trac/ticket/5949
-        test_findFailureInGenerator.skip = (
-            "Python 3 support to be fixed in #5949")
-        test_failureConstructionFindsOriginalFailure.skip = (
-            "Python 3 support to be fixed in #5949")
-
-
     def test_ambiguousFailureInGenerator(self):
         """
         When a generator reraises a different exception,
